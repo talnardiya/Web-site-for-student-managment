@@ -1,0 +1,46 @@
+<html>
+
+<body style="background-color: deepskyblue;text-align: center;margin: auto;" onload="loadData()">
+    Full Name: <input style="background-color: gold;" type="text" id="fullName"><br />
+    Faculty: <input style="background-color: gold;" type="text" id="faculty"> <br />
+    <button style="background-color: gold;font-size: larger;display: block;margin: auto;"
+        onclick="updateData()">Update</button>
+</body>
+<script>
+    const URL_PATH = 'http://localhost:8000/students'
+    const studentId = sessionStorage.getItem('id')
+
+    const loadData = async () => { // loadData is a function that takes the existing fullname and faculty and putting them on the input fields when the page loads.
+        const response = await fetch(`${URL_PATH}/${studentId}`)
+        if (response.ok) {
+            const student = await response.json();
+            document.getElementById('fullName').value = student.fullName
+            document.getElementById('faculty').value = student.faculty
+        }
+    }
+    const updateData = async () => { // updateData is a function that runs when the user click the update button. it is saving the new values that the user inserted
+        const updateStudent =
+        {
+            fullName: document.getElementById('fullName').value,
+            faculty: document.getElementById('faculty').value,
+        }
+
+
+        const response = await fetch(`${URL_PATH}/${studentId}`,
+            {
+                method: "put",
+                headers: { "content-type": "application/json" },  // using put method in order to update the student details.
+                body: JSON.stringify(updateStudent)
+
+            })
+        if (response.ok) {
+            const data = await response.json()
+            console.log(data)
+            window.location.href = "main.html"
+
+        }
+    }
+
+</script>
+
+</html>

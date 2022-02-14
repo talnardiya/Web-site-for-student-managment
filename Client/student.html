@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <title>Student Details</title>
+</head>
+
+<body style="background-color: deepskyblue;text-align: center;margin: auto;" onload="showData()"
+    style=text-align:center;>
+    <h1 style="color:gold"> Student Details</h1><br />
+    <span id="span"></span>
+
+    <div id="formGrade" style="display: none;"></div>
+</body>
+<script>
+    const URL_PATH = "http://localhost:8000/students"
+    const id = sessionStorage.getItem('id')
+    const span = document.getElementById('span')
+
+    // showData is a function which shows the student's data on h3 elements, also loat the table with the exam's details.
+    const showData = async () => {
+        const response = await fetch(`${URL_PATH}/${id}`)
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data)
+            // Student Name,Faculty,Birth
+            const name = document.createElement('h3')
+            name.innerText = data.fullName
+            name.style.color = "Gold"
+            const faculty = document.createElement('h3')
+            faculty.innerText = data.faculty
+            faculty.style.color = "Gold"
+            const email = document.createElement('h3')         // Creating h3 elements for the student's details and getting them from the data base.
+            email.innerText = data.email;
+            email.style.color = "Gold"
+            const birth = document.createElement('h3')
+            birth.style.color = "Gold"
+            const bd = new Date(data.birthDate) // making a normal format for date..
+            const fd = `${bd.getDate()}/${bd.getMonth() + 1}/${bd.getUTCFullYear()}`
+            birth.innerText = fd;
+
+            span.appendChild(name)
+            span.appendChild(email)       // appending these details to the span
+            span.appendChild(faculty)
+            span.appendChild(birth)
+
+            const table = document.createElement('table')
+            table.border = 1;
+            table.style.margin = "auto"
+            table.style.color = "Gold"
+            const tr = document.createElement('tr')
+            const thName = document.createElement('th')          //Creating a table with tr of headers.
+            thName.innerText = "Name";
+            const thDate = document.createElement('th')
+            thDate.innerText = "Date";
+            const thGrade = document.createElement('th')
+            thGrade.innerText = "Grade";
+
+
+            tr.appendChild(thName)
+            tr.appendChild(thDate)      // appending the th to the tr
+            tr.appendChild(thGrade)
+            table.appendChild(tr)      // appending the tr to the table.
+            span.appendChild(table)    // appending the table to the span.
+
+            data.exams.forEach(g => { // using HOF forEach method to sort all the exams details on the table
+                const newTr = document.createElement('tr')
+
+                const name = document.createElement('td');
+                name.innerText = g.name
+                const date = document.createElement('td')                  // creating tr and tds for the student's exams information.
+                const objDate = new Date(g.date)
+                const finalDate = `${objDate.getDate()}/${objDate.getMonth() + 1}/${objDate.getFullYear()}`
+                date.innerText = finalDate;
+                const grade = document.createElement('td');
+                grade.innerText = g.grade
+
+                newTr.appendChild(name)
+                newTr.appendChild(date)
+                newTr.appendChild(grade)   // appending the exams details to the TR
+                table.appendChild(newTr)   // appending the newTr to the table
+                span.appendChild(table)    // appending the table to the span
+            })
+        }
+    }
+</script>
+
+</html>

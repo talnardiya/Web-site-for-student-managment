@@ -1,0 +1,42 @@
+<html>
+
+<body style="background-color: deepskyblue;text-align: center;margin: auto;">
+    Full Name: <input style="background-color: gold;" type="text" id="fullName"><br />
+    Email: <input style="background-color: gold;" type="email" id="email"><br />
+    Faculty: <input style="background-color: gold;" type="text" id="faculty"> <br />
+    Birth Date:<input style="background-color: gold;" type="date" id="birthDate"><br />
+    <button style="background-color: gold;font-size: larger;display: block;margin: auto;"
+        onclick="addData()">Save</button>
+</body>
+<script>
+    const URL_PATH = 'http:/localhost:8000/students'
+    const studentId = sessionStorage.getItem('id');
+
+    const addData = async () =>      // This function is taking the input values from the user and send async http post request to submit data to the server.()
+    {
+        const updateStudent = // 
+        {
+            // Taking the user's input values and storing the in the updateStudent variable as an object
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            faculty: document.getElementById('faculty').value,
+            birthDate: document.getElementById('birthDate').value,
+        }
+        console.log(updateStudent)
+        const response = await fetch(`${URL_PATH}`,
+            {
+                method: "post",
+                headers: { "content-type": "application/json" }, //using the post method in order to put the new values of the user in the database
+                body: JSON.stringify(updateStudent)
+            })
+
+        if (response.ok) {
+            const data = await response.json()
+            console.log(data)
+            window.location.href = "main.html"
+
+        }
+    }
+</script>
+
+</html>

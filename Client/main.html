@@ -1,0 +1,121 @@
+<html>
+
+<body style="background-color: deepskyblue;" onload="getAllStudents()">
+    <table style="margin-left:auto;margin-right: auto;" id="tbl" border="1">
+        <tr>
+            <th>Full Name</th>
+            <th>Faculty</th>
+            <th>Exams</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </table>
+    <button style="background-color: gold;font-size: larger;display: block;margin:auto" onclick="addStudent()">Add
+        Student</button>
+</body>
+<script>
+
+    const URL_PATH = 'http://localhost:8000/students'
+
+    const getAllStudents = async () => { //getAllStudents function is getting all the students details and shows them on a table.
+
+        const tableElem = document.getElementById('tbl'); // creating the table for the student details
+
+        const response = await fetch(URL_PATH);
+
+        if (response.ok) {
+            const students = await response.json()
+            console.log(students);
+
+            students.map(student => {  // Using HOF method map to get the students from the database to the table.
+                // Creating a table's row
+                const trElem = document.createElement('tr')
+
+                // Creating a table's DATA(column)
+                const tdFullName = document.createElement('td')
+                const tdFaculty = document.createElement('td')
+                const tdExams = document.createElement('td')
+                const tdEditBtn = document.createElement('td')
+                const tdDeleteBtn = document.createElement('td')
+
+                // Creating Edit button and delete button
+                const editBtnElem = document.createElement('button')
+                editBtnElem.style.backgroundColor = "Gold"
+
+                const deleteBtnElem = document.createElement('button')
+                deleteBtnElem.style.backgroundColor = "Red"
+
+                // Setting the innertext of the Edit button
+                editBtnElem.innerText = 'Edit';
+                editBtnElem.onclick = () => editStudent(student._id) // making the editStudent function to be called on click of the Edit button
+
+                // Setting the innertext of the delete button
+                deleteBtnElem.innerText = 'Delete'
+                deleteBtnElem.onclick = () => deleteStudent(student._id)// making the deleteStudent function to be called on click of the Delete button.
+
+                tdFullName.innerHTML = student.fullName //Setting the innerHTML of the FullName td to be taken from the database.
+                tdFaculty.innerHTML = student.faculty   //Setting the innerHTML of the Faculty td to be taken from the database.
+                tdExams.innerHTML = "Exams"; // Setting Exams innerHTML to be const Exams
+
+                tdFullName.value = student._id
+                tdExams.value = student._id           // putting a value in these td's
+                tdEditBtn.value = student._id
+                tdDeleteBtn.value = student._id
+
+                tdFullName.setAttribute("onclick", "studentData(value)")
+                tdExams.setAttribute("onclick", "studentExams(value)")    // Setting on click attributes for these td's and calling their functions
+                tdEditBtn.setAttribute("onclick", "editStudent(value)")
+                tdDeleteBtn.setAttribute("onclick", "deleteStudent(value)")
+
+                tdEditBtn.appendChild(editBtnElem) // appending the edit button to its td
+                tdDeleteBtn.appendChild(deleteBtnElem) // appending the delete button to its td
+
+                // appending the td's to its raw
+                trElem.appendChild(tdFullName)
+                trElem.appendChild(tdFaculty)
+                trElem.appendChild(tdExams)
+                trElem.appendChild(tdEditBtn)
+                trElem.appendChild(tdDeleteBtn)
+                // appending the raw to the table
+                tableElem.appendChild(trElem);
+
+            })
+        }
+    }
+
+    // Redirect to another site with the student's data
+    const studentData = (id) => {
+        sessionStorage.setItem("id", id)
+        window.location.href = "./student.html"
+        console.log(id)
+    }
+
+    // Redirect to another site with the student's Exams
+    const studentExams = (id) => {
+        sessionStorage.setItem("id", id)
+        window.location.href = "./studentExams.html" // need to create html page
+    }
+
+    // Redirect to another site which will let the user edit the student's he desires 
+    const editStudent = async (id) => {
+        sessionStorage.setItem('id', id)
+        window.location.href = "EditStudent.html"
+    }
+
+    // deletestudent is a function that lets you remove a student by id from the database.
+    const deleteStudent = async (id) => {
+        const response = await fetch(`${URL_PATH}/${id}`, { method: 'delete' })
+        if (response.ok) {
+            const data = await response.json()
+            window.location.reload()
+        }
+    }
+    // Redirect to another site which let you adding students.
+    const addStudent = () => {
+        window.location.href = "AddStudent.html"
+    }
+
+
+</script>
+
+</html>
